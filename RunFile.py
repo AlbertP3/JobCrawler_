@@ -1,11 +1,11 @@
 import NoFluffJobs
 import json
 
-#configure link
-tech = False   # 'java%20python%20...
-city = 'warszawa'
+# configure link
+tech = 'python'  # 'java%20python%20...
+city = 'krakow'
 page = 1
-endPage = 6
+endPage = 1
 
 #initialize
 jobList = NoFluffJobs.Scrape(tech, city, page, endPage)

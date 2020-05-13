@@ -2,6 +2,8 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from urllib.error import HTTPError
 from urllib.error import URLError
+import requests
+from lxml import html
 
 # collection of all classes in job offers
 noFluffJobsClasses = [
@@ -37,6 +39,26 @@ def getLinks(bs):
         myList.append('https://nofluffjobs.com'+str(link.attrs['href']))
     return myList
 
+#get seniority level (subpage)
+def getSeniority(linkList):
+    myList = []
+    for link in linkList:
+        html = urlopen(link)
+        bs = BeautifulSoup(html.read(), 'html.parser')
+        
+        seniority = bs.find('div', {'col star-section text-center active'}).findNext('p')
+        myList.append(seniority.get_text())
+    return myList
+
+#get description (subpage)
+def getDescription(linkList):
+    myList = []
+    for link in linkList:
+        content = html.fromstring(requests.get(link).content)
+        desc = content.xpath('/html/body/nfj-root/nfj-layout/nfj-main-content/div/div/div[1]/nfj-posting-details/nfj-main-loader/section/div[2]/div[1]/div[1]/nfj-posting-description/div/p/text()')
+        myList.append(desc)
+    return myList
+
 # count job offers on site
 def countOffers(bs):
     offersList = bs.findAll('h4', {'posting-title__position'})
@@ -48,7 +70,7 @@ def getTitle(bs):
     myList = []
     jobTitleList = bs.findAll('h4', {'posting-title__position'})
     for title in jobTitleList:
-        myList.append(title.get_text())
+        myList.append(title.get_text().replace(' NOWA',''))
     return myList
 
 # Get list of salaries - different method used as the salary might be missing
@@ -74,7 +96,7 @@ def getEmployer(bs):
 # open&connect to URL -> also serves as run method generating the final output
 def Scrape(tech, city, starting_page: int, ending_page: int):
     generalList = []
-    generalList.append('Job Title;Employer Name;Salary;Link')
+    generalList.append('Job Title;Employer Name;Salary;Link;Seniority;describtion')
 
     for i in range(starting_page, ending_page+1):
         print("Trying crawling on page "+ str(i) + "/" + str(ending_page))
@@ -98,13 +120,16 @@ def Scrape(tech, city, starting_page: int, ending_page: int):
             print("Successfully connected to the server! (2/3)")
 
         bs = BeautifulSoup(html.read(), 'html.parser')
+
+
         title = getTitle(bs)
         employer = getEmployer(bs)
         salary = getSalary(bs)
         link = getLinks(bs)
-
+        seniority = getSeniority(link)
+        desc = getDescription(link)
         for i in range(countOffers(bs)):
-            jobOffer = "%s;%s;%s;%s" % (title[i], employer[i], salary[i], link[i])
+            jobOffer = "%s;%s;%s;%s;%s;%s" % (title[i], employer[i], salary[i], link[i], seniority[i], desc[i])
             generalList.append(jobOffer)
 
     return generalList
