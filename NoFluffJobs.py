@@ -59,6 +59,34 @@ def getDescription(linkList):
         myList.append(desc)
     return myList
 
+# returns years of experience required in job description (if available)
+def getExperience(descList):
+    myList = []
+    str_want = '1,2,3,4,5,6,7,8,9,0,-'
+    for desc in descList:
+        mDesc = str(desc)
+
+        yearWordPos = mDesc.find('year')
+        if yearWordPos < 0:
+            yearWordPos = mDesc.find('lat')
+            if yearWordPos < 0:
+                yearWordPos = mDesc.find('let')
+
+        if yearWordPos < 0:
+            myList.append('-')
+        else:
+            exp_part = mDesc[yearWordPos - 4:yearWordPos]
+            exp = [s for s in exp_part if s in str_want]
+            exp = ''.join(exp)
+            try:
+                if int(exp) > 20: exp = '-'
+            except:
+                pass
+
+            myList.append(exp)
+
+    return myList
+
 # count job offers on site
 def countOffers(bs):
     offersList = bs.findAll('h4', {'posting-title__position'})
@@ -96,7 +124,7 @@ def getEmployer(bs):
 # open&connect to URL -> also serves as run method generating the final output
 def Scrape(tech, city, starting_page: int, ending_page: int):
     generalList = []
-    generalList.append('Job Title;Employer Name;Salary;Link;Seniority;describtion')
+    generalList.append('Job Title;;;Employer Name;;;Salary;;;Link;;;Seniority;;;describtion;;;experience')
 
     for i in range(starting_page, ending_page+1):
         print("Trying crawling on page "+ str(i) + "/" + str(ending_page))
@@ -121,15 +149,16 @@ def Scrape(tech, city, starting_page: int, ending_page: int):
 
         bs = BeautifulSoup(html.read(), 'html.parser')
 
-
         title = getTitle(bs)
         employer = getEmployer(bs)
         salary = getSalary(bs)
         link = getLinks(bs)
         seniority = getSeniority(link)
         desc = getDescription(link)
+        experience = getExperience(desc)
         for i in range(countOffers(bs)):
-            jobOffer = "%s;%s;%s;%s;%s;%s" % (title[i], employer[i], salary[i], link[i], seniority[i], desc[i])
+            jobOffer = "%s;;;%s;;;%s;;;%s;;;%s;;;%s;;;%s" % (title[i], employer[i], salary[i],
+                                                 link[i], seniority[i], desc[i], experience[i])
             generalList.append(jobOffer)
 
     return generalList
