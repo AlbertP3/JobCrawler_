@@ -6,8 +6,7 @@ from flask_bcrypt import Bcrypt
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
-#import NoFluffJobs
-
+from Crawler import NoFluffJobs
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///test.db"
@@ -18,11 +17,11 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 # login_manager.login_message_category =
 
-#Modele
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+#Modele
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key = True)
@@ -44,28 +43,28 @@ class Search(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     keyword = db.Column(db.String(50), nullable = False)
     location = db.Column(db.String(50), nullable = False)
-    offers_id = db.relationship('Offer', backref = 'wyszukiwanie', lazy = True)
+#    offers_id = db.relationship('Offer', backref = 'wyszukiwanie', lazy = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
 
     def __repr__(self):
         return '<Search %r>' % self.id
 
-class Offer(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    title = db.Column(db.String(50), nullable = False)
-    company = db.Column(db.String(50), nullable = False)
-    salary = db.Column(db.Numeric(precision=2, asdecimal=False, decimal_return_scale = None))
-    reflink = db.Column(db.String(50), nullable = False)
-    search_id = db.Column(db.Integer, db.ForeignKey('search.id'), nullable = False)
-
-
-    def __init__(self, keyword, localisation):
-         self.keyword = keyword
-         self.localisation = localisation
-
-    def __repr__(self):
-            return '<Oferta %r>' % self.id
-
+# class Offer(db.Model):
+#     id = db.Column(db.Integer, primary_key = True)
+#     title = db.Column(db.String(50), nullable = False)
+#     company = db.Column(db.String(50), nullable = False)
+#     salary = db.Column(db.Numeric(precision=2, asdecimal=False, decimal_return_scale = None))
+#     reflink = db.Column(db.String(50), nullable = False)
+#     search_id = db.Column(db.Integer, db.ForeignKey('search.id'), nullable = False)
+#
+#
+#     def __init__(self, keyword, localisation):
+#          self.keyword = keyword
+#          self.localisation = localisation
+#
+#     def __repr__(self):
+#             return '<Oferta %r>' % self.id
+#
 
 #Formy
 
@@ -83,7 +82,7 @@ class RegForm(FlaskForm):
             raise ValidationError('Nazwa użytkownika zajęta wybierz inną')
 
 class LogForm(FlaskForm):
-    username = StringField('username',
+    username = StringField('Username',
                            validators=[DataRequired(), Length(min=2, max=20)])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
@@ -102,27 +101,28 @@ class SearchForm(FlaskForm):
 def index():
     return render_template('index.html')
 
+@login_required
 @app.route('/search',methods = ['POST','GET'])
 def search():
+    # if current_user.is_authenticated:
+    #     return render_template(url_for('search.html'), form = form)
 
     form = SearchForm()
-    if current_user.is_authenticated:
-        return render_template('search.html', form = form )
-
 
     if form.validate_on_submit():
-        search1 = Search(keyword=form.keyword, location=form.location, user_id=current_user)
+        search1 = Search(keyword=form.keyword.data, location=form.location.data, ovner=current_user)
         db.session.add(search1)
         db.session.commit()
-        return render_template('offers.html', form = form, search1 = search1)
+        return redirect(url_for('offers'))
 
-
-    return render_template('login.html', form = form )
+    return render_template('search.html', form=form)
 
 @app.route('/offers',methods=['POST','GET'])
-def offers(search1):
-    jobList = NoFluffJobs.Scrape(search1.keyword,search1.location,1,6)
-    return render_template('offers.')
+def offers():
+
+    search1 = Search.query.order_by(Search.id.desc()).filter(Search.ovner == current_user).first()
+    jobList = NoFluffJobs.Scrape(search1.keyword,search1.location,1,1)
+    return render_template('offers.html',jobList = jobList)
 
 @app.route('/register',methods = ['POST','GET'])
 def register():

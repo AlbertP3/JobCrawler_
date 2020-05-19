@@ -1,12 +1,12 @@
-# import NoFluffJobs
+import NoFluffJobs
 # import json
 # import time
 
 # configure link
 tech = 'c++'  # 'java%20python%20...
 city = 'warszawa'
-page = 1
-endPage = 1
+# page = 1
+# endPage = 1
 
 #initialize
 # start_time = time.perf_counter()

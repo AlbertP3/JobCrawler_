@@ -5,6 +5,20 @@ from urllib.error import URLError
 import requests
 from lxml import html
 
+
+#Class to create offer and append to the list of offers instead of list with this wierd separators XD 
+class Oferta:
+    def __init__(self,title,employer,salary,link,seniority,desc,expirience):
+         self.title = title
+         self.employer = employer
+         self.salary = salary
+         self.link = link
+         self.seniority = seniority
+         self.desc = desc
+         self.expirience = expirience
+
+
+
 # collection of all classes in job offers
 noFluffJobsClasses = [
     'posting-list-item posting-list-item--bigData',
@@ -124,7 +138,7 @@ def getEmployer(bs):
 # open&connect to URL -> also serves as run method generating the final output (List, ";;;" separated)
 def Scrape(tech, city, starting_page: int, ending_page: int):
     generalList = []
-    generalList.append('Job Title;;;Employer Name;;;Salary;;;Link;;;Seniority;;;describtion;;;experience')
+    #generalList.append('Job Title;;;Employer Name;;;Salary;;;Link;;;Seniority;;;describtion;;;experience')
 
     if not city: city = 'warszawa'
 
@@ -160,8 +174,10 @@ def Scrape(tech, city, starting_page: int, ending_page: int):
         desc = getDescription(link)
         experience = getExperience(desc)
         for i in range(countOffers(bs)):
-            jobOffer = "%s;;;%s;;;%s;;;%s;;;%s;;;%s;;;%s" % (title[i], employer[i], salary[i],
-                                                 link[i], seniority[i], desc[i], experience[i])
+            #Tutaj tworzy te obiekty oferta
+            jobOffer = Oferta(title[i], employer[i], salary[i], link[i], seniority[i], desc[i], experience[i])
+            # jobOffer = "%s;;;%s;;;%s;;;%s;;;%s;;;%s;;;%s" % (title[i], employer[i], salary[i],
+            #                                      link[i], seniority[i], desc[i], experience[i])
             generalList.append(jobOffer)
 
     return generalList
