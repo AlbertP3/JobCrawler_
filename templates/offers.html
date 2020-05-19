@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<a href="{{ url_for(search) }}">Wyszukaj inne oferty</a>
+    {%for oferta in jobList %}
+        <h3>{{oferta.title}}</h3>
+        <h4>{{oferta.company}}</h4>
+        <h4>{{oferta.salary}}</h4>
+        <h4>{{oferta.reflink}}</h4>
+        </br>
+    </br>
+    {% endfor %}
+{% endblock %}

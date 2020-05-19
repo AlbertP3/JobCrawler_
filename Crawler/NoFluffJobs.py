@@ -147,6 +147,7 @@ def Scrape(tech, city, starting_page: int, ending_page: int):
             #print("Server not found")
             break
         else:
+            pass
             #print("Successfully connected to the server! (2/3)")
 
         bs = BeautifulSoup(html.read(), 'html.parser')
