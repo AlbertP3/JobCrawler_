@@ -121,31 +121,33 @@ def getEmployer(bs):
         myList.append(name.get_text().replace('w ','',1))
     return myList
 
-# open&connect to URL -> also serves as run method generating the final output
+# open&connect to URL -> also serves as run method generating the final output (List, ";;;" separated)
 def Scrape(tech, city, starting_page: int, ending_page: int):
     generalList = []
     generalList.append('Job Title;;;Employer Name;;;Salary;;;Link;;;Seniority;;;describtion;;;experience')
 
+    if not city: city = 'warszawa'
+
     for i in range(starting_page, ending_page+1):
-        print("Trying crawling on page "+ str(i) + "/" + str(ending_page))
+        #print("Trying crawling on page "+ str(i) + "/" + str(ending_page))
         if tech:
             url = 'https://nofluffjobs.com/pl/jobs/' + city + '/' + tech + '?criteria=city%3D' + \
                 city + '%20' + tech + '&page=' + str(i)
         else:
             url = 'https://nofluffjobs.com/pl/jobs/' + city + '?criteria=city%3D' + \
                   city + '&page=' + str(i)
-
+    # dodac sytaucje kiedy ani tech ani lokalizacja nie jest podana
         try:
             html = urlopen(url)
-            print("HTML found (1/3)")
+            #print("HTML found (1/3)")
         except HTTPError as e:
-            print('HTML does not exist')
+            #print('HTML does not exist')
             break
         except URLError as e:
-            print("Server not found")
+            #print("Server not found")
             break
         else:
-            print("Successfully connected to the server! (2/3)")
+            #print("Successfully connected to the server! (2/3)")
 
         bs = BeautifulSoup(html.read(), 'html.parser')
 
