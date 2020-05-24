@@ -80,7 +80,7 @@ class TestCase(unittest.TestCase):
     #     self.assertIn(b'keyword', response.data)
     #     self.assertIn(b'miasta', response.data)
     #
-    #
+    #s
     # def test_user_creation_ok(self):
     #     #Najczęstrze hasła 2019 wg. wikipedii + kilka polskich znaków
     #     passwords = ['123456','123456789','qwerty','password','12\34567','12345678','12345','iloveyou','111111','123123','abc123','qwerty123','q2w3e4r','admin','qwertyuiop','654321','555555','lovely','7777777','welcome','888888','princess','dragon','password1' ]
