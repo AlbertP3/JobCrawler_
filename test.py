@@ -1,6 +1,5 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-import time
 
 driver = webdriver.Edge("C:\\Users\\blueg\\Documents\\Workspace Python\\JobCrawler_\\msedgedriver.exe")
 driver.get("http://127.0.0.1:5000/")
