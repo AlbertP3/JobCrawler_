@@ -1,5 +1,10 @@
 body{
+    font-size: 24px;
     background-color: black;
     color:violet;
     font-style: italic;
+}
+
+.linav{
+    color:yellow;
 }

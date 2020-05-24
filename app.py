@@ -15,7 +15,6 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
-# login_manager.login_message_category =
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -95,25 +94,27 @@ class SearchForm(FlaskForm):
     submit = SubmitField('Znajdz')
 
 
+
 #Routy
 
 @app.route('/', methods = ['POST','GET'])
 def index():
+
     return render_template('index.html')
 
-@login_required
+
 @app.route('/search',methods = ['POST','GET'])
 def search():
-    # if current_user.is_authenticated:
-    #     return render_template(url_for('search.html'), form = form)
-
     form = SearchForm()
+    if current_user.is_authenticated == False:
+             return render_template(url_for('index.html'))
 
     if form.validate_on_submit():
         search1 = Search(keyword=form.keyword.data, location=form.location.data, ovner=current_user)
         db.session.add(search1)
         db.session.commit()
         return redirect(url_for('offers'))
+
 
     return render_template('search.html', form=form)
 
@@ -129,6 +130,7 @@ def register():
 
     if current_user.is_authenticated:
         return redirect(url_for('index'))
+
     form = RegForm()
 
     if form.validate_on_submit():
@@ -142,7 +144,6 @@ def register():
 
 @app.route('/login',methods = ['POST','GET'])
 def login():
-
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LogForm()
@@ -153,9 +154,9 @@ def login():
             login_user(user, remember=True)
             return redirect(url_for('index'))
         else:
-            return "Błąd logowania!!!"
+            return render_template('login.html', form = form, fail = True)
 
-    return render_template('login.html', form = form)
+    return render_template('login.html', form = form, fail = False)
 
 @login_required
 @app.route('/logout')
