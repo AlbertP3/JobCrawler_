@@ -107,7 +107,7 @@ def index():
 def search():
     form = SearchForm()
     if current_user.is_authenticated == False:
-             return render_template(url_for('index.html'))
+             return redirect(url_for('login'))
 
     if form.validate_on_submit():
         search1 = Search(keyword=form.keyword.data, location=form.location.data, ovner=current_user)
@@ -120,10 +120,12 @@ def search():
 
 @app.route('/offers',methods=['POST','GET'])
 def offers():
+    if current_user.is_authenticated:
+        search1 = Search.query.order_by(Search.id.desc()).filter(Search.ovner == current_user).first()
+        jobList = NoFluffJobs.Scrape(search1.keyword,search1.location,1,1)
+        return render_template('offers.html',jobList = jobList)
 
-    search1 = Search.query.order_by(Search.id.desc()).filter(Search.ovner == current_user).first()
-    jobList = NoFluffJobs.Scrape(search1.keyword,search1.location,1,1)
-    return render_template('offers.html',jobList = jobList)
+    return redirect(url_for('login'))
 
 @app.route('/register',methods = ['POST','GET'])
 def register():

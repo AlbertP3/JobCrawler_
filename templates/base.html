@@ -15,12 +15,14 @@
                 <a href="{{ url_for('logout') }}"><li class = linav>Wyloguj się</li></a>
             {% else %}
                 <a href="{{ url_for('login') }}"><li class = linav>Zaloguj się</li></a>
-                <a href="{{ url_for('register') }}"><li class = linav>Zarejestruj s1ię</li></a>
+                <a href="{{ url_for('register') }}"><li class = linav>Zarejestruj się</li></a>
             {% endif %}
 
             {% block body %}{% endblock %}
         </ul>
     </nav>
+            <h4>{{ massage }}</h4>
+
 </body>
 
 <script src = "{{ url_for('static', filename = 'js/main.js') }}"></script>
