@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
 {% block body %}
-
+{% if fail == True %}
+    <h2>Podaj prawidłowe login i hasło</h2>
+{% endif %}
 <form method="POST" action="">
     {{ form.hidden_tag() }}
     {{ form.username.label }}
