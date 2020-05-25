@@ -260,7 +260,7 @@ class SearchTestClass:
 
 
 # initialize webdriver
-driver = webdriver.Edge("C:\\Users\\blueg\\Documents\\Workspace Python\\JobCrawler_\\msedgedriver.exe")
+driver = webdriver.Chrome("JobCrawler_\\msedgedriver.exe")
 
 # webdriver config
 driver.get("http://127.0.0.1:5000/")
