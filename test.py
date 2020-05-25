@@ -55,6 +55,16 @@ class RegFormTestClass:
         assert self.driver.current_url != self.register_site
         print("Form check (final check): OK")
 
+    # try correct fill of form
+    def correct_form_testFail(self, id_username, id_password):
+        self.cleanup()
+        self.username.send_keys(id_username)
+        self.password.send_keys(id_password)
+        self.confirm.send_keys(id_password)
+        self.submit.click()
+        assert self.driver.current_url == self.register_site
+        print("Form check (final check): OK")
+
     # cleanup fields
     def cleanup(self):
         self.username.clear()
@@ -105,6 +115,14 @@ class LoginFormTestClass:
         self.password.send_keys(id_password)
         self.submit.click()
         assert self.driver2.current_url != self.login_site
+        print("Form Check (login): OK")
+
+    def login_testFail(self, id_name, id_password):
+        self.cleanup()
+        self.username.send_keys(id_name)
+        self.password.send_keys(id_password)
+        self.submit.click()
+        assert self.driver2.current_url == self.login_site
         print("Form Check (login): OK")
 
     #cleanup fields
@@ -158,6 +176,7 @@ class SearchTestClass:
 
 # initialize webdriver
 driver = webdriver.Edge("C:\\Users\\blueg\\Documents\\Workspace Python\\JobCrawler_\\msedgedriver.exe")
+driver.encoding = "UTF-8"
 
 # webdriver config
 driver.get("http://127.0.0.1:5000/")
@@ -165,6 +184,10 @@ driver.get("http://127.0.0.1:5000/")
 # create mock up user
 mock_name = "testUser" + str(random.randint(200, 30000))
 mock_pass = "qwerty123"
+emoji_name = "😁JO😁"
+emoji_pass = "😍JO😍"
+pl_name = "ąźćż"
+pl_pass = "ńłśóę"
 print(mock_name," ", mock_pass)
 
 # conduct tests - register form
@@ -174,6 +197,8 @@ RegFormTestClass(driver).blank_all_test()
 RegFormTestClass(driver).blank_pass_test()
 RegFormTestClass(driver).blank_username_test()
 RegFormTestClass(driver).correct_form_test(mock_name, mock_pass)
+#RegFormTestClass(driver).correct_form_test(emoji_name, emoji_pass)
+RegFormTestClass(driver).correct_form_testFail(pl_name, pl_pass)
 
 # webdriver config - main page
 driver.get("http://127.0.0.1:5000/")
@@ -183,14 +208,17 @@ print("== Testing Login Form ==")
 LoginFormTestClass(driver).blank_all()
 LoginFormTestClass(driver).blank_username()
 LoginFormTestClass(driver).blank_password()
+LoginFormTestClass(driver).login_test(pl_name, pl_pass)
+driver.find_element_by_link_text("Wyloguj się").click()
+#LoginFormTestClass(driver).login_test(emoji_name, emoji_pass)
 LoginFormTestClass(driver).login_test(mock_name, mock_pass)
-
-# webdriver config - search page
-driver.get("http://127.0.0.1:5000/search")
 
 # conduct tests - search form <- must be logged first
 print("== Testing Search Form ==")
+driver.get("http://127.0.0.1:5000/search")
 SearchTestClass(driver).random_input()
+driver.get("http://127.0.0.1:5000/search")
 SearchTestClass(driver).standardInput()
 
 print("TESTING FINISHED SUCCESSFULLY")
+

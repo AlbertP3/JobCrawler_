@@ -11,6 +11,7 @@ from Crawler import NoFluffJobs
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///test.db"
 app.config['SECRET_KEY'] = 'asdasdasd'
+app.config['WERKZEUG_DEBUG_PIN'] = '123'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
@@ -21,7 +22,6 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 #Modele
-
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(20), unique=True, nullable = False)
@@ -111,6 +111,16 @@ def search():
 
     if form.validate_on_submit():
         search1 = Search(keyword=form.keyword.data, location=form.location.data, ovner=current_user)
+
+        #loops checking for special chars
+        alphabet = "abcdefghijklmnoprstuwyz"
+        for i in form.keyword.data:
+            if i not in alphabet:
+                return redirect(url_for('offers'))
+        for j in form.location.data:
+            if j not in alphabet:
+                return redirect(url_for('offers'))
+
         db.session.add(search1)
         db.session.commit()
         return redirect(url_for('offers'))
