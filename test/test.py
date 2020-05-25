@@ -13,6 +13,7 @@ def login(client, username, password):
     ), follow_redirects=True)
 
 
+
 def logout(client):
     return client.get('/logout', follow_redirects=True)
 
