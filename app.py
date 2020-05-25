@@ -116,10 +116,10 @@ def search():
         alphabet = "abcdefghijklmnoprstuwyz"
         for i in form.keyword.data:
             if i not in alphabet:
-                return redirect(url_for('offers'))
+                return redirect(url_for('search'))
         for j in form.location.data:
             if j not in alphabet:
-                return redirect(url_for('offers'))
+                return redirect(url_for('search'))
 
         db.session.add(search1)
         db.session.commit()
@@ -133,7 +133,7 @@ def offers():
     if current_user.is_authenticated:
         search1 = Search.query.order_by(Search.id.desc()).filter(Search.ovner == current_user).first()
         jobList = NoFluffJobs.Scrape(search1.keyword,search1.location,1,1)
-        return render_template('offers.html',jobList = jobList)
+        return render_template('offers.html', jobList=jobList)
 
     return redirect(url_for('login'))
 
@@ -180,4 +180,3 @@ def logout():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
