@@ -166,6 +166,7 @@ class SearchTestClass:
         self.search.click()
         link_check = self.driver3.find_element_by_tag_name("h4")
         assert link_check
+        x = "mockuup value"
         print("Logical input test: OK")
 
     # cleanup fields
